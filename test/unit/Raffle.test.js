@@ -56,9 +56,9 @@ describe("Raffle", async () => {
       await network.provider.request({ method: "evm_mine", params: [] });
       // we pretend to be a keeper for a second
       await raffle.performUpkeep("0x"); // changes the state to calculating for our comparison below
-      //   await expect(
-      //     raffle.enterRaffle({ value: entranceFee })
-      //   ).to.be.rejectedWith("Raffle_NotOpen");
+      await expect(
+        raffle.enterRaffle({ value: entranceFee })
+      ).to.be.rejectedWith("Raffle_NotOpen");
     });
   });
   describe("checkUpkeep", () => {
@@ -105,5 +105,7 @@ describe("Raffle", async () => {
         ).to.be.revertedWith("nonexistent request");
       });
     });
+
+    
   });
 });
