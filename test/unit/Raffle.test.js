@@ -104,8 +104,42 @@ describe("Raffle", async () => {
           coordinator.fulfillRandomWords(0, raffle.target)
         ).to.be.revertedWith("nonexistent request");
       });
-    });
 
-    
+      it("should pick a winner,resets the lottery, and sends money", async () => {
+        // mock several people to enter the raffle
+        const accounts = await ethers.getSigners();
+        const beginBalance = await ethers.provider.getBalance(
+          accounts[0].address
+        );
+        for (let i = 0; i < accounts.length; i++) {
+          raffle = raffle.connect(accounts[i]);
+          raffle.enterRaffle({ value: entranceFee });
+        }
+        // registe listener for the event
+        const getRequestIdHandler = new Promise(async (resolove, reject) => {
+          raffle.once("RequestedRaffleWinner", async (requestId) => {
+            try {
+              console.log("event has been listened");
+              assert.isAbove(await raffle.getBalance(), 0);
+              // transfer random to fulfillRandomWordsa
+              await coordinator.fulfillRandomWords(requestId, raffle.target);
+              const winner = await raffle.getWinner();
+              assert.equal(await raffle.getRaffleState(), "0");
+              assert.equal(await raffle.getBalance(), 0);
+              const endBalance = await ethers.provider.getBalance(winner);
+              assert.isTrue(endBalance > beginBalance);
+              resolove();
+            } catch (e) {
+              reject(e);
+            }
+          });
+        });
+        // mock the chainlink node to request random
+        const response = await raffle.performUpkeep("0x");
+        response.wait(1);
+        // execute business logic after receving random
+        await getRequestIdHandler;
+      });
+    });
   });
 });

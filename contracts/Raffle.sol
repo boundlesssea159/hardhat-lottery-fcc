@@ -102,6 +102,10 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
         return s_players.length;
     }
 
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
     // let people enter the raffle
     function enterRaffle() public payable {
         if (msg.value < i_entranceFee) {
@@ -132,23 +136,9 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
         emit RaffleWinnerPicked(winner);
     }
 
-    function checkUpkeep(
-        bytes memory
-    ) public view override returns (bool upkeepNeeded, bytes memory) {
-        bool isOpen = (s_raffleState == RaffleState.OPEN);
-        console.log("isOpen:", isOpen);
-        bool overInterval = (block.timestamp - s_lastTimeStamp) > i_interval;
-        console.log("overInterval:", overInterval);
-        bool hasPlayers = (s_players.length > 0);
-        console.log("hasPlayers:", hasPlayers);
-        bool hasBalance = (address(this).balance > 0);
-        console.log("hasBalance:", hasBalance);
-        upkeepNeeded = (isOpen && overInterval && hasPlayers && hasBalance);
-        return (upkeepNeeded, "0x0");
-    }
-
     // request random number , don't allow anyone enter this raflle
     function performUpkeep(bytes calldata) external override {
+        console.log("begin performUpkeep");
         (bool upkeepNeeded, ) = checkUpkeep("");
         if (!upkeepNeeded) {
             revert Raffle_UpKeepNotNeeded(
@@ -167,5 +157,21 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
             NUM_WORDS
         );
         emit RequestedRaffleWinner(requestId);
+        console.log("emit RequestedRaffleWinner event");
+    }
+
+    function checkUpkeep(
+        bytes memory
+    ) public view override returns (bool upkeepNeeded, bytes memory) {
+        bool isOpen = (s_raffleState == RaffleState.OPEN);
+        console.log("isOpen:", isOpen);
+        bool overInterval = (block.timestamp - s_lastTimeStamp) > i_interval;
+        console.log("overInterval:", overInterval);
+        bool hasPlayers = (s_players.length > 0);
+        console.log("hasPlayers:", hasPlayers);
+        bool hasBalance = (address(this).balance > 0);
+        console.log("hasBalance:", hasBalance);
+        upkeepNeeded = (isOpen && overInterval && hasPlayers && hasBalance);
+        return (upkeepNeeded, "0x0");
     }
 }

@@ -24,6 +24,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         await coordinatorV2Mock.createSubscription()
         // wait receiving the SubscriptionCreated event and execute the callback function
         await promise
+        // fund some eth to coordinator, otherwise the request will fail
+        await coordinatorV2Mock.fundSubscription(subscriptionId, ethers.parseEther("20"))
     } else {
         coordinatorMockAdress = networkConfig[networkName]["vrfCoordinatorV2"]
         subscriptionId = networkConfig[networkName]["subscriptionId"]
