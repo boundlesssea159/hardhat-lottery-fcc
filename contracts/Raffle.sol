@@ -157,7 +157,6 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface {
             NUM_WORDS
         );
         emit RequestedRaffleWinner(requestId);
-        console.log("emit RequestedRaffleWinner event");
     }
 
     function checkUpkeep(

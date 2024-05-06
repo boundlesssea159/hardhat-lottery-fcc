@@ -26,7 +26,10 @@ const networkConfig = {
     callbackGasLimit: 500000,
     interval: 30,
     vrfCoordinatorV2: "0x8103b0a8a00be2ddc778e6e7eaa21791cd364625",
+    raffle: "0x3861bbad13d9eab41c5377fb15f772712d374957",
   },
 };
 
-module.exports = { networkConfig };
+const developmentChains = ["hardhat", "localhost"];
+
+module.exports = { networkConfig, developmentChains };

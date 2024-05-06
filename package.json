@@ -15,10 +15,14 @@
     "@typechain/hardhat": "^9.0.0",
     "chai": "^4.2.0",
     "dotenv": "^16.4.5",
-    "ethers": "^6.4.0",
+    "ethers": "^6.12.1",
     "hardhat-deploy": "^0.12.4",
     "hardhat-gas-reporter": "^1.0.8",
     "solidity-coverage": "^0.8.0",
     "typechain": "^8.3.0"
+  },
+  "scripts": {
+    "test-unit": "yarn hardhat test test/unit/*.js",
+    "test-staging": "yarn hardhat test test/staging/*.js --network sepolia"
   }
 }
